@@ -10,7 +10,8 @@ package org.usfirst.frc4068;
 import org.usfirst.frc4068.code.*;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import java.util.Hashtable;
-import edu.wpi.first.wpilibj.Joystick;
+
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -23,35 +24,19 @@ import edu.wpi.first.wpilibj.Timer;
  */
 public class RobotMain extends IterativeRobot {
     
-    //Global variables
+    //Global variables - Class refs
     Hashtable refs = new Hashtable();
     PeriodicTasks tasks = new PeriodicTasks();
+    GeneralCode code = new GeneralCode(refs);
+    Claws claws = new Claws(refs);
+    Launcher launcher = new Launcher(refs);
+    Vision camera = new Vision();
     
     //Called when the robot is turned on - initialize objects here
     public void robotInit() {
         
-        /*
-         * Initialize code here - create joysticks/drive trains/any other objects to be used in code
-         * To initialize an object - create a new object of that type ex. String s = "test";
-         * - add it to the reference table with a reference name ex. refs.put("stringex", s);
-         * **note - when referencing the object later, use refs.get("reference"), and use a cast to the
-         * original object type ex. String y = ((string)refs.get("stringex")); - make sure to include an
-         * extra set of parenthesis around the whole thing to affect the result of the whole statement (String),
-         * rather than the object returned (Object)**
-         */
+        code.init();
         
-        RobotDrive drive = new RobotDrive(1, 2, 3, 4);
-        drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, false);
-        drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, false);
-        drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, false);
-        drive.setInvertedMotor(RobotDrive.MotorType.kRearRight, false);
-        refs.put("drive", drive);
-        
-        Joystick driver = new Joystick(1);
-        refs.put("driver", driver);
-        
-        Joystick coDriver = new Joystick(1);
-        refs.put("coDriver", coDriver);
     }
     
     /*
@@ -68,6 +53,7 @@ public class RobotMain extends IterativeRobot {
     public void disabledInit() {
         //Sets safety on drive train to on
         ((RobotDrive)refs.get("drive")).setSafetyEnabled(true);
+        ((Compressor)refs.get("Compressor")).stop();
     }
     public void disabledPeriodic() {
         
@@ -87,10 +73,12 @@ public class RobotMain extends IterativeRobot {
     }
     public void autonomousContinuous() {
         Timer t = new Timer(); //Start the timer as soon as autonomous starts
+        t.start();
         int auto_time = 10; //Amount of time allocated to autonomous in seconds
         RobotDrive drive = ((RobotDrive)refs.get("drive"));
         
-        t.start();
+        (new Thread(new GeneralCode(refs, "auto_1"))).start();
+        
         drive.drive(-0.5, 0.0);
         Timer.delay(2.0);
         drive.drive(0, 0);
