@@ -2,6 +2,9 @@ package org.usfirst.frc4068.code;
 
 import java.util.Hashtable;
 
+import org.usfirst.frc4068.subsystems.Claws;
+import org.usfirst.frc4068.subsystems.Launcher;
+
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.AnalogModule;
 import edu.wpi.first.wpilibj.Compressor;
@@ -12,18 +15,18 @@ import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.camera.*;
 import edu.wpi.first.wpilibj.Talon;
 
-public class GeneralCode implements Runnable{
+public class Begin implements Runnable{
     RobotDrive drive;
     Hashtable refs;
     Launcher launcher = new Launcher(refs);
     Claws claws = new Claws(refs);
     String thread;
     
-    public GeneralCode(Hashtable refs) {
+    public Begin(Hashtable refs) {
         this.refs = refs;
     }
     
-    public GeneralCode(Hashtable refs, String thread) {
+    public Begin(Hashtable refs, String thread) {
         this.refs = refs;
         this.thread = thread;
     }
@@ -53,8 +56,11 @@ public class GeneralCode implements Runnable{
          */
         
         //Initialize the robot drive
-        drive = new RobotDrive(3, 4, 1, 2);
-        //frontLeft, rearLeft, frontRight, rearRight
+    	Talon RL = new Talon(4);
+    	Talon RR = new Talon(2);
+    	Talon FL = new Talon(3);
+    	Talon FR = new Talon(1);
+    	drive = new RobotDrive(FL, RL, FR, RR);
         drive.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
         drive.setInvertedMotor(RobotDrive.MotorType.kFrontRight, false);
         drive.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
@@ -97,7 +103,7 @@ public class GeneralCode implements Runnable{
         refs.put("AM1", analog1);
         refs.put("Ultrasonic", sonar);
     }
-    public double ultrasonicGetDistance(int scale) {
+    public double ultrasonicGetDistance(double scale) {
         double distance;
         AnalogChannel ultrasonic = ((AnalogChannel)refs.get("Ultrasonic"));
         ultrasonic.setAverageBits(3);

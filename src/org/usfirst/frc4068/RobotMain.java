@@ -8,12 +8,15 @@
 package org.usfirst.frc4068;
 
 import org.usfirst.frc4068.code.*;
-import edu.wpi.first.wpilibj.IterativeRobot;
-import java.util.Hashtable;
+import org.usfirst.frc4068.subsystems.*;
 
+import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Timer;
+
+import java.util.Hashtable;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,15 +30,12 @@ public class RobotMain extends IterativeRobot {
     //Global variables - Class refs
     Hashtable refs = new Hashtable();
     PeriodicTasks tasks = new PeriodicTasks();
-    GeneralCode code = new GeneralCode(refs);
-    Claws claws = new Claws(refs);
-    Launcher launcher = new Launcher(refs);
-    Vision camera = new Vision();
+    Begin begin = new Begin(refs);
     
     //Called when the robot is turned on - initialize objects here
     public void robotInit() {
         
-        code.init();
+        begin.init();
         
     }
     
@@ -77,7 +77,7 @@ public class RobotMain extends IterativeRobot {
         int auto_time = 10; //Amount of time allocated to autonomous in seconds
         RobotDrive drive = ((RobotDrive)refs.get("drive"));
         
-        (new Thread(new GeneralCode(refs, "auto_1"))).start();
+        (new Thread(new Begin(refs, "auto_1"))).start();
         
         drive.drive(-0.5, 0.0);
         Timer.delay(2.0);
@@ -97,7 +97,8 @@ public class RobotMain extends IterativeRobot {
     }
     //Called continuously while in the teleop part of the match
     public void teleopContinuous() {
-        
+    	Joystick driver = ((Joystick)refs.get("driver"));
+        ((RobotDrive)refs.get("drive")).arcadeDrive(driver.getRawAxis(1), driver.getRawAxis(2));
     }
     
     //Called when the robot first enters test mode
